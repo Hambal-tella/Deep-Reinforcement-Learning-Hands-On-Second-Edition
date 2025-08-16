@@ -1,20 +1,24 @@
-import gym
-
+import gymnasium as gym
+import time
 
 if __name__ == "__main__":
-    env = gym.make("CartPole-v0")
+    env = gym.make("CartPole-v1", render_mode="human")
 
-    total_reward = 0.0
-    total_steps = 0
-    obs = env.reset()
+    try:
+        for episode in range(1, 10):  # 5 episodes
+            obs, info = env.reset()
+            total_reward = 0.0
+            total_steps = 0
+            done = False
 
-    while True:
-        action = env.action_space.sample()
-        obs, reward, done, _ = env.step(action)
-        total_reward += reward
-        total_steps += 1
-        if done:
-            break
+            while not done:
+                action = env.action_space.sample()
+                obs, reward, terminated, truncated, info = env.step(action)
+                total_reward += reward
+                total_steps += 1
+                done = terminated or truncated
+                time.sleep(0.02)  # slow down so you can see it
 
-    print("Episode done in %d steps, total reward %.2f" % (
-        total_steps, total_reward))
+            print(f"Episode {episode} done in {total_steps} steps, total reward {total_reward:.2f}")
+    finally:
+        env.close()
